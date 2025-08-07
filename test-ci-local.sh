@@ -31,3 +31,7 @@ print_status $? "Dependencies installed"
 echo -e "\n${YELLOW}Step 2: Running ESLint...${NC}"
 npm run lint:check
 print_status $? "ESLint passed"
+
+echo -e "\n${YELLOW}Step 4: Code formatting check...${NC}"
+npm run format:check
+print_status $? "Code formatting passed"

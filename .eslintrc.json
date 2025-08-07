@@ -53,11 +53,11 @@
         "prefer-promise-reject-errors": "error",
         "require-await": "error",
         
-        // Style & Formatting
+        // Style & Formatting (aligned with Prettier)
         "indent": ["error", 2, { "SwitchCase": 1 }],
         "quotes": ["error", "single", { "avoidEscape": true }],
-        "semi": ["error", "never"],
-        "comma-dangle": ["error", "never"],
+        "semi": ["error", "always"],
+        "comma-dangle": ["error", "only-multiline"],
         "object-curly-spacing": ["error", "always"],
         "array-bracket-spacing": ["error", "never"],
         "computed-property-spacing": ["error", "never"],
