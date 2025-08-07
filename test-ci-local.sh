@@ -32,6 +32,13 @@ echo -e "\n${YELLOW}Step 2: Running ESLint...${NC}"
 npm run lint:check
 print_status $? "ESLint passed"
 
-echo -e "\n${YELLOW}Step 4: Code formatting check...${NC}"
+echo -e "\n${YELLOW}Step 3: Code formatting check...${NC}"
 npm run format:check
 print_status $? "Code formatting passed"
+
+echo -e "\n${YELLOW}Step 4: Running tests with coverage...${NC}"
+npm run test:ci
+print_status $? "Tests passed"
+
+echo -e "\n${GREEN}🎉 All CI checks passed locally!${NC}"
+echo -e "${YELLOW}You can now safely push to trigger the GitHub Actions pipeline.${NC}"
