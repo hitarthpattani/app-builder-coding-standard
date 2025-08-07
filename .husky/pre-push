@@ -1,0 +1,3 @@
+# Run comprehensive checks before pushing to remote
+npm run lint:check
+npm run test:ci
