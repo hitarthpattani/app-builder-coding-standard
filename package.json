@@ -30,7 +30,6 @@
     "prettier": "^3"
   },
   "scripts": {
-    "prepare": "[ \"$CI\" = \"true\" ] || husky",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

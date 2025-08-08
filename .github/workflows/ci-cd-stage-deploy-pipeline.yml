@@ -15,7 +15,7 @@ jobs:
     name: Code Quality
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    
+
     env:
       NODE_ENV: test
       CI: true
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: code-quality
-    
+
     env:
       NODE_ENV: test
       CI: true
@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [code-quality, test]
-    
+
     env:
       NODE_ENV: production
       CI: true
@@ -100,6 +100,15 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Setup CLI
+        uses: adobe/aio-cli-setup-action@1.3.0
+        with:
+          os: ubuntu-latest
+          version: 10.x.x
 
       - name: Build project
         env:
@@ -121,7 +130,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [code-quality, test, build]
-    
+
     env:
       NODE_ENV: production
       CI: true
