@@ -9,12 +9,8 @@ on: [pull_request]
 jobs:
   code-quality:
     name: Code Quality
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 10
-    strategy:
-      matrix:
-        node-version: ['20']
-        os: [ubuntu-latest, macOS-latest]
     
     env:
       NODE_ENV: test
@@ -27,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -45,13 +41,9 @@ jobs:
 
   test:
     name: Test Suite
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: code-quality
-    strategy:
-      matrix:
-        node-version: ['20']
-        os: [ubuntu-latest, macOS-latest]
     
     env:
       NODE_ENV: test
@@ -64,39 +56,20 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci --prefer-offline --no-audit
 
-      - name: Setup CLI
-        uses: adobe/aio-cli-setup-action@1.3.0
-        with:
-          os: ${{ matrix.os }}
-          version: 10.x.x
-
-      - name: Auth
-        uses: adobe/aio-apps-action@3.3.0
-        with:
-          os: ${{ matrix.os }}
-          command: oauth_sts
-          CLIENTID: ${{ secrets.CLIENTID_STAGE }}
-          CLIENTSECRET: ${{ secrets.CLIENTSECRET_STAGE }}
-          TECHNICALACCOUNTID: ${{ secrets.TECHNICALACCID_STAGE }}
-          TECHNICALACCOUNTEMAIL: ${{ secrets.TECHNICALACCEMAIL_STAGE }}
-          IMSORGID: ${{ secrets.IMSORGID_STAGE }}
-          SCOPES: ${{ secrets.SCOPES_STAGE }}
-
       - name: Run tests with coverage
         uses: adobe/aio-apps-action@3.3.0
         with:
-          os: ${{ matrix.os }}
+          os: ubuntu-latest
           command: test
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
-        if: matrix.os == 'ubuntu-latest'
         with:
           file: ./coverage/lcov.info
           flags: unittests
@@ -105,13 +78,9 @@ jobs:
 
   build:
     name: Build
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [code-quality, test]
-    strategy:
-      matrix:
-        node-version: ['20']
-        os: [ubuntu-latest, macOS-latest]
     
     env:
       NODE_ENV: production
@@ -124,7 +93,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -133,13 +102,13 @@ jobs:
       - name: Setup CLI
         uses: adobe/aio-cli-setup-action@1.3.0
         with:
-          os: ${{ matrix.os }}
+          os: ubuntu-latest
           version: 10.x.x
 
       - name: Auth
         uses: adobe/aio-apps-action@3.3.0
         with:
-          os: ${{ matrix.os }}
+          os: ubuntu-latest
           command: oauth_sts
           CLIENTID: ${{ secrets.CLIENTID_STAGE }}
           CLIENTSECRET: ${{ secrets.CLIENTSECRET_STAGE }}
@@ -153,12 +122,11 @@ jobs:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
         uses: adobe/aio-apps-action@3.3.0
         with:
-          os: ${{ matrix.os }}
+          os: ubuntu-latest
           command: build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
-        if: matrix.os == 'ubuntu-latest'
         with:
           name: build-artifacts
           path: dist/
