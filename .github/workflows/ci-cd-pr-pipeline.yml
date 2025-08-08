@@ -120,10 +120,7 @@ jobs:
       - name: Build project
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
-        uses: adobe/aio-apps-action@3.3.0
-        with:
-          os: ubuntu-latest
-          command: build
+        run: aio app build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

@@ -107,10 +107,7 @@ jobs:
       - name: Build project
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
-        uses: adobe/aio-apps-action@3.3.0
-        with:
-          os: ubuntu-latest
-          command: build
+        run: aio app build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -163,10 +160,7 @@ jobs:
       - name: Build project
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
-        uses: adobe/aio-apps-action@3.3.0
-        with:
-          os: ubuntu-latest
-          command: build
+        run: aio app build
 
       - name: Deploy to Stage
         env:
@@ -178,8 +172,4 @@ jobs:
           AIO_PROJECT_WORKSPACE_ID: ${{ secrets.AIO_PROJECT_WORKSPACE_ID_STAGE }}
           AIO_PROJECT_WORKSPACE_NAME: ${{ secrets.AIO_PROJECT_WORKSPACE_NAME_STAGE }}
           AIO_PROJECT_WORKSPACE_DETAILS_SERVICES: ${{ secrets.AIO_PROJECT_WORKSPACE_DETAILS_SERVICES_STAGE }}
-        uses: adobe/aio-apps-action@3.3.0
-        with:
-          os: ubuntu-latest
-          command: deploy
-          noPublish: true
+        run: aio app deploy --no-publish
