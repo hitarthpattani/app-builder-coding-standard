@@ -34,7 +34,13 @@ jobs:
       - name: Format Code (Prettier)
         run: npm run format:check
 
-      - name: Run Security Audit (Advisory)
+      - name: Tests (Unit Tests)
+        uses: adobe/aio-apps-action@3.3.0
+        with:
+          os: ${{ matrix.os }}
+          command: test
+
+      - name: Security Audit (Advisory)
         run: npm run security:audit || true
         continue-on-error: true
 
@@ -77,12 +83,6 @@ jobs:
           TECHNICALACCOUNTEMAIL: ${{ secrets.TECHNICALACCEMAIL_STAGE }}
           IMSORGID: ${{ secrets.IMSORGID_STAGE }}
           SCOPES: ${{ secrets.SCOPES_STAGE }}
-
-      - name: Run Tests (Unit Tests)
-        uses: adobe/aio-apps-action@3.3.0
-        with:
-          os: ${{ matrix.os }}
-          command: test
 
       - name: Build Application (AIO CLI)
         env:

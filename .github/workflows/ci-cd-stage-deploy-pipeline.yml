@@ -13,148 +13,74 @@ on:
 jobs:
   code-quality:
     name: Code Quality
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: ['20']
+        os: [ubuntu-latest]
     timeout-minutes: 10
 
-    env:
-      NODE_ENV: test
-      CI: true
-
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: ${{ matrix.node-version }}
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci --prefer-offline --no-audit
 
-      - name: Run ESLint
+      - name: Lint Code (ESLint)
         run: npm run lint:check
 
-      - name: Check code formatting
+      - name: Format Code (Prettier)
         run: npm run format:check
 
-      - name: Run security audit (advisory)
+      - name: Tests (Unit Tests)
+        uses: adobe/aio-apps-action@3.3.0
+        with:
+          os: ${{ matrix.os }}
+          command: test
+
+      - name: Security Audit (Advisory)
         run: npm run security:audit || true
         continue-on-error: true
 
-  test:
-    name: Test Suite
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: code-quality
-
-    env:
-      NODE_ENV: test
-      CI: true
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
-
-      - name: Run tests with coverage
-        uses: adobe/aio-apps-action@3.3.0
-        with:
-          os: ubuntu-latest
-          command: test
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-
-        with:
-          file: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: [code-quality, test]
-
-    env:
-      NODE_ENV: production
-      CI: true
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
-
-      - name: Setup CLI
-        uses: adobe/aio-cli-setup-action@1.3.0
-        with:
-          os: ubuntu-latest
-          version: 10.x.x
-
-      - name: Build project
-        env:
-          AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
-        uses: adobe/aio-apps-action@3.3.0
-        with:
-          os: ubuntu-latest
-          command: build
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-
-        with:
-          name: build-artifacts
-          path: dist/
-
-  deploy-stage:
-    name: Deploy to Stage
-    runs-on: ubuntu-latest
+  deploy:
+    name: Deploy
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 1
+      matrix:
+        node-version: ['20']
+        os: [ubuntu-latest]
     timeout-minutes: 20
-    needs: [code-quality, test, build]
-
-    env:
-      NODE_ENV: production
-      CI: true
+    needs: [code-quality]
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: ${{ matrix.node-version }}
 
-      - name: Setup CLI
+      - name: Install Dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: Setup AIO CLI
         uses: adobe/aio-cli-setup-action@1.3.0
         with:
-          os: ubuntu-latest
+          os: ${{ matrix.os }}
           version: 10.x.x
 
-      - name: Auth
+      - name: Validate Authorization (AIO CLI)
         uses: adobe/aio-apps-action@3.3.0
         with:
-          os: ubuntu-latest
+          os: ${{ matrix.os }}
           command: oauth_sts
           CLIENTID: ${{ secrets.CLIENTID_STAGE }}
           CLIENTSECRET: ${{ secrets.CLIENTSECRET_STAGE }}
@@ -163,15 +89,15 @@ jobs:
           IMSORGID: ${{ secrets.IMSORGID_STAGE }}
           SCOPES: ${{ secrets.SCOPES_STAGE }}
 
-      - name: Build project
+      - name: Build Application (AIO CLI)
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
         uses: adobe/aio-apps-action@3.3.0
         with:
-          os: ubuntu-latest
+          os: ${{ matrix.os }}
           command: build
 
-      - name: Deploy to Stage
+      - name: Deploy Application (AIO CLI)
         env:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
           AIO_RUNTIME_AUTH: ${{ secrets.AIO_RUNTIME_AUTH_STAGE }}
@@ -183,6 +109,6 @@ jobs:
           AIO_PROJECT_WORKSPACE_DETAILS_SERVICES: ${{ secrets.AIO_PROJECT_WORKSPACE_DETAILS_SERVICES_STAGE }}
         uses: adobe/aio-apps-action@3.3.0
         with:
-          os: ubuntu-latest
+          os: ${{ matrix.os }}
           command: deploy
           noPublish: true
