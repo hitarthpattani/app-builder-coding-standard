@@ -49,7 +49,7 @@ jobs:
         continue-on-error: true
 
   deploy:
-    name: Deploy
+    name: Deploy to Stage
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 1
