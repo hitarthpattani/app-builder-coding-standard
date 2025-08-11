@@ -11,9 +11,22 @@ import ActionsForm from './ActionsForm';
 import { Home } from './Home';
 import { About } from './About';
 
-function App(props) {
+const App = props => {
   console.log('runtime object:', props.runtime);
   console.log('ims object:', props.ims);
+
+  // error handler on UI rendering failure
+  const onError = (_e, _componentStack) => {};
+
+  // component to show if UI fails rendering
+  const fallbackComponent = ({ componentStack, error }) => {
+    return (
+      <React.Fragment>
+        <h1 style={{ textAlign: 'center', marginTop: '20px' }}>Something went wrong :(</h1>
+        <pre>{`${componentStack}\n${error.message}`}</pre>
+      </React.Fragment>
+    );
+  };
 
   // use exc runtime event handlers
   // respond to configuration change events (e.g. user switches org)
@@ -54,21 +67,6 @@ function App(props) {
       </Router>
     </ErrorBoundary>
   );
-
-  // Methods
-
-  // error handler on UI rendering failure
-  function onError(_e, _componentStack) {}
-
-  // component to show if UI fails rendering
-  function fallbackComponent({ componentStack, error }) {
-    return (
-      <React.Fragment>
-        <h1 style={{ textAlign: 'center', marginTop: '20px' }}>Something went wrong :(</h1>
-        <pre>{`${componentStack}\n${error.message}`}</pre>
-      </React.Fragment>
-    );
-  }
-}
+};
 
 export default App;

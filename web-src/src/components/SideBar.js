@@ -5,7 +5,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-function SideBar() {
+const SideBar = () => {
   return (
     <ul className='SideNav'>
       <li className='SideNav-item'>
@@ -41,6 +41,6 @@ function SideBar() {
       </li>
     </ul>
   );
-}
+};
 
 export default SideBar;

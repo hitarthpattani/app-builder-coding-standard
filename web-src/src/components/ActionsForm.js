@@ -43,6 +43,73 @@ const ActionsForm = props => {
     actionResult: '',
   });
 
+  // parses a JSON input and adds it to the state
+  const setJSONInput = (input, stateJSON, stateValid) => {
+    let content;
+    let validStr = null;
+    if (input) {
+      try {
+        content = JSON.parse(input);
+        validStr = 'valid';
+      } catch (e) {
+        content = null;
+        validStr = 'invalid';
+      }
+    }
+    setState({ ...state, [stateJSON]: content, [stateValid]: validStr });
+  };
+
+  // invokes a the selected backend actions with input headers and params
+  const invokeAction = async () => {
+    setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ' });
+    const actionName = state.actionSelected;
+    const headers = state.actionHeaders || {};
+    const params = state.actionParams || {};
+    const startTime = Date.now();
+    // all headers to lowercase
+    Object.keys(headers).forEach(h => {
+      const lowercase = h.toLowerCase();
+      if (lowercase !== h) {
+        headers[lowercase] = headers[h];
+        headers[h] = undefined;
+        delete headers[h];
+      }
+    });
+    // set the authorization header and org from the ims props object
+    if (props.ims.token && !headers.authorization) {
+      headers.authorization = `Bearer ${props.ims.token}`;
+    }
+    if (props.ims.org && !headers['x-gw-ims-org-id']) {
+      headers['x-gw-ims-org-id'] = props.ims.org;
+    }
+    let formattedResult = '';
+    try {
+      // invoke backend action
+      const actionResponse = await actionWebInvoke(actions[actionName], headers, params);
+      formattedResult = `time: ${Date.now() - startTime} ms\n${JSON.stringify(actionResponse, 0, 2)}`;
+      // store the response
+      setState({
+        ...state,
+        actionResponse,
+        actionResult: formattedResult,
+        actionResponseError: null,
+        actionInvokeInProgress: false,
+      });
+      console.log(`Response from ${actionName}:`, actionResponse);
+    } catch (e) {
+      // log and store any error message
+      formattedResult = `time: ${Date.now() - startTime} ms\n${e.message}`;
+      console.error(e);
+      setState({
+        ...state,
+        actionResponse: null,
+        actionResult: formattedResult,
+        actionResponseError: e.message,
+        actionInvokeInProgress: false,
+      });
+    }
+  };
+
   return (
     <View width='size-6000'>
       <Heading level={1}>Run your application backend actions</Heading>
@@ -138,75 +205,6 @@ const ActionsForm = props => {
       />
     </View>
   );
-
-  // Methods
-
-  // parses a JSON input and adds it to the state
-  function setJSONInput(input, stateJSON, stateValid) {
-    let content;
-    let validStr = null;
-    if (input) {
-      try {
-        content = JSON.parse(input);
-        validStr = 'valid';
-      } catch (e) {
-        content = null;
-        validStr = 'invalid';
-      }
-    }
-    setState({ ...state, [stateJSON]: content, [stateValid]: validStr });
-  }
-
-  // invokes a the selected backend actions with input headers and params
-  async function invokeAction() {
-    setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ' });
-    const actionName = state.actionSelected;
-    const headers = state.actionHeaders || {};
-    const params = state.actionParams || {};
-    const startTime = Date.now();
-    // all headers to lowercase
-    Object.keys(headers).forEach(h => {
-      const lowercase = h.toLowerCase();
-      if (lowercase !== h) {
-        headers[lowercase] = headers[h];
-        headers[h] = undefined;
-        delete headers[h];
-      }
-    });
-    // set the authorization header and org from the ims props object
-    if (props.ims.token && !headers.authorization) {
-      headers.authorization = `Bearer ${props.ims.token}`;
-    }
-    if (props.ims.org && !headers['x-gw-ims-org-id']) {
-      headers['x-gw-ims-org-id'] = props.ims.org;
-    }
-    let formattedResult = '';
-    try {
-      // invoke backend action
-      const actionResponse = await actionWebInvoke(actions[actionName], headers, params);
-      formattedResult = `time: ${Date.now() - startTime} ms\n${JSON.stringify(actionResponse, 0, 2)}`;
-      // store the response
-      setState({
-        ...state,
-        actionResponse,
-        actionResult: formattedResult,
-        actionResponseError: null,
-        actionInvokeInProgress: false,
-      });
-      console.log(`Response from ${actionName}:`, actionResponse);
-    } catch (e) {
-      // log and store any error message
-      formattedResult = `time: ${Date.now() - startTime} ms\n${e.message}`;
-      console.error(e);
-      setState({
-        ...state,
-        actionResponse: null,
-        actionResult: formattedResult,
-        actionResponseError: e.message,
-        actionInvokeInProgress: false,
-      });
-    }
-  }
 };
 
 ActionsForm.propTypes = {
