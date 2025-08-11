@@ -61,7 +61,7 @@
           "isDefault": true
         },
         "dependsOrder": "sequence",
-        "dependsOn": ["lint:fix", "format", "test:ci"],
+        "dependsOn": ["lint:fix", "format", "type-check", "test:ci"],
         "presentation": {
           "echo": true,
           "reveal": "always",
@@ -137,6 +137,20 @@
           "panel": "shared"
         },
         "problemMatcher": []
+      },
+      {
+        "type": "shell",
+        "label": "type-check:watch",
+        "command": "npm run type-check:watch",
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": ["$tsc-watch"],
+        "isBackground": true
       },
       {
         "type": "shell",
