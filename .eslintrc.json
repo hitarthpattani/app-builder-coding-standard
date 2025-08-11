@@ -1,144 +1,213 @@
 {
-    "env": {
-        "es6": true,
-        "node": true,
-        "browser": true,
-        "jest": true
-    },
-    "extends": [
-        "eslint:recommended",
-        "plugin:jest/recommended"
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true,
+    "jest": true
+  },
+  "extends": ["eslint:recommended", "plugin:jest/recommended"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    // Code Quality
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "after-used",
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_"
+      }
     ],
-    "parserOptions": {
-        "ecmaVersion": "latest",
-        "sourceType": "module",
-        "ecmaFeatures": {
-            "jsx": true
-        }
+    "no-console": "warn",
+    "no-debugger": "error",
+    "no-alert": "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "prefer-arrow-callback": "error",
+    "no-duplicate-imports": "error",
+
+    // Best Practices
+    "eqeqeq": ["error", "always"],
+    "curly": ["error", "all"],
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-script-url": "error",
+    "no-return-assign": "error",
+    "no-sequences": "error",
+    "no-throw-literal": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowShortCircuit": true,
+        "allowTernary": true
+      }
+    ],
+    "no-useless-call": "error",
+    "no-useless-concat": "error",
+    "no-useless-return": "error",
+    "prefer-promise-reject-errors": "error",
+    "require-await": "error",
+
+    // Style & Formatting (aligned with Prettier)
+    "indent": ["error", 2, { "SwitchCase": 1 }],
+    "quotes": ["error", "single", { "avoidEscape": true }],
+    "semi": ["error", "always"],
+    "comma-dangle": ["error", "only-multiline"],
+    "object-curly-spacing": ["error", "always"],
+    "array-bracket-spacing": ["error", "never"],
+    "computed-property-spacing": ["error", "never"],
+    "key-spacing": ["error", { "beforeColon": false, "afterColon": true }],
+    "space-before-blocks": "error",
+    "space-in-parens": ["error", "never"],
+    "space-infix-ops": "error",
+    "space-unary-ops": ["error", { "words": true, "nonwords": false }],
+    "keyword-spacing": "error",
+    "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+    "comma-spacing": ["error", { "before": false, "after": true }],
+    "func-call-spacing": ["error", "never"],
+    "no-trailing-spaces": "error",
+    "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 1 }],
+    "eol-last": ["error", "always"],
+
+    // Function & Variable Declaration
+    "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
+    "prefer-template": "error",
+    "template-curly-spacing": ["error", "never"],
+    "object-shorthand": ["error", "always"],
+    "quote-props": ["error", "as-needed"],
+
+    // Error Prevention
+    "no-undef": "error",
+    "no-redeclare": "error",
+    "no-shadow": "error",
+    "no-use-before-define": ["error", { "functions": false, "classes": true }],
+    "no-unreachable": "error",
+    "no-constant-condition": "error",
+    "no-dupe-args": "error",
+    "no-dupe-keys": "error",
+    "no-duplicate-case": "error",
+    "valid-typeof": "error",
+
+    // Adobe App Builder specific
+    "no-process-exit": "error",
+    "handle-callback-err": "error",
+    "no-new-require": "error",
+    "no-path-concat": "error",
+
+    // Jest specific overrides
+    "jest/expect-expect": "error",
+    "jest/no-disabled-tests": "warn",
+    "jest/no-focused-tests": "error",
+    "jest/no-identical-title": "error",
+    "jest/prefer-to-have-length": "warn",
+    "jest/valid-expect": "error"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.js", "**/*.spec.js", "**/e2e/**/*.js"],
+      "env": {
+        "jest": true
+      },
+      "rules": {
+        "no-console": "off"
+      }
     },
-    "rules": {
-        // Code Quality
-        "no-unused-vars": ["error", { 
-            "vars": "all", 
-            "args": "after-used", 
+    {
+      "files": ["**/web-src/**/*.js", "**/web-src/**/*.jsx"],
+      "env": {
+        "browser": true,
+        "node": false
+      },
+      "rules": {
+        // Disable Node.js specific rules
+        "no-process-exit": "off",
+        "handle-callback-err": "off",
+        "no-new-require": "off",
+        "no-path-concat": "off",
+
+        // Allow console.log in React components for debugging (Adobe EXC Shell integration)
+        "no-console": "off",
+
+        // React Component Best Practices (using built-in ESLint rules)
+        "no-unused-vars": [
+          "warn",
+          {
+            "vars": "all",
+            "args": "after-used",
             "ignoreRestSiblings": true,
-            "argsIgnorePattern": "^_"
-        }],
-        "no-console": "warn",
-        "no-debugger": "error",
-        "no-alert": "error",
-        "no-var": "error",
-        "prefer-const": "error",
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^(React|PropTypes|[A-Z].*)$"
+          }
+        ],
+
+        // Component structure standards
         "prefer-arrow-callback": "error",
-        "no-duplicate-imports": "error",
-        
-        // Best Practices
-        "eqeqeq": ["error", "always"],
-        "curly": ["error", "all"],
-        "no-eval": "error",
-        "no-implied-eval": "error",
-        "no-new-func": "error",
-        "no-script-url": "error",
-        "no-return-assign": "error",
-        "no-sequences": "error",
-        "no-throw-literal": "error",
-        "no-unmodified-loop-condition": "error",
-        "no-unused-expressions": ["error", { 
-            "allowShortCircuit": true, 
-            "allowTernary": true 
-        }],
-        "no-useless-call": "error",
-        "no-useless-concat": "error",
-        "no-useless-return": "error",
-        "prefer-promise-reject-errors": "error",
-        "require-await": "error",
-        
-        // Style & Formatting (aligned with Prettier)
-        "indent": ["error", 2, { "SwitchCase": 1 }],
-        "quotes": ["error", "single", { "avoidEscape": true }],
-        "semi": ["error", "always"],
-        "comma-dangle": ["error", "only-multiline"],
-        "object-curly-spacing": ["error", "always"],
-        "array-bracket-spacing": ["error", "never"],
-        "computed-property-spacing": ["error", "never"],
-        "key-spacing": ["error", { "beforeColon": false, "afterColon": true }],
-        "space-before-blocks": "error",
-        "space-in-parens": ["error", "never"],
-        "space-infix-ops": "error",
-        "space-unary-ops": ["error", { "words": true, "nonwords": false }],
-        "keyword-spacing": "error",
-        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
-        "comma-spacing": ["error", { "before": false, "after": true }],
-        "func-call-spacing": ["error", "never"],
-        "no-trailing-spaces": "error",
-        "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 1 }],
-        "eol-last": ["error", "always"],
-        
-        // Function & Variable Declaration
         "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
-        "prefer-template": "error",
-        "template-curly-spacing": ["error", "never"],
+        "prefer-const": "error",
+        "no-var": "error",
+
+        // Adobe React Spectrum specific imports
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@adobe/react-spectrum/*"],
+                "message": "Import from '@adobe/react-spectrum' directly instead of subpaths for better tree-shaking"
+              }
+            ]
+          }
+        ],
+
+        // JSX/Component naming conventions
+        "new-cap": [
+          "error",
+          {
+            "capIsNew": false,
+            "capIsNewExceptions": ["React.Component", "React.PureComponent"]
+          }
+        ],
+
+        // React Hooks patterns (using built-in rules)
+        "no-use-before-define": [
+          "error",
+          {
+            "functions": false,
+            "classes": true,
+            "variables": false
+          }
+        ],
+
+        // Component export consistency
+        "consistent-return": "off",
+
+        // Adobe React Spectrum component standards
+        "object-curly-spacing": ["error", "always"],
         "object-shorthand": ["error", "always"],
-        "quote-props": ["error", "as-needed"],
-        
-        // Error Prevention
-        "no-undef": "error",
-        "no-redeclare": "error",
-        "no-shadow": "error",
-        "no-use-before-define": ["error", { "functions": false, "classes": true }],
-        "no-unreachable": "error",
-        "no-constant-condition": "error",
-        "no-dupe-args": "error",
-        "no-dupe-keys": "error",
-        "no-duplicate-case": "error",
-        "valid-typeof": "error",
-        
-        // Adobe App Builder specific
-        "no-process-exit": "error",
-        "handle-callback-err": "error",
-        "no-new-require": "error",
-        "no-path-concat": "error",
-        
-        // Jest specific overrides
-        "jest/expect-expect": "error",
-        "jest/no-disabled-tests": "warn",
-        "jest/no-focused-tests": "error",
-        "jest/no-identical-title": "error",
-        "jest/prefer-to-have-length": "warn",
-        "jest/valid-expect": "error"
+        "prefer-template": "error",
+
+        // Accessibility basics (using built-in rules)
+        "no-script-url": "error",
+        "no-implicit-globals": "error"
+      }
     },
-    "overrides": [
-        {
-            "files": ["**/*.test.js", "**/*.spec.js", "**/e2e/**/*.js"],
-            "env": {
-                "jest": true
-            },
-            "rules": {
-                "no-console": "off"
-            }
-        },
-        {
-            "files": ["**/web-src/**/*.js"],
-            "env": {
-                "browser": true,
-                "node": false
-            },
-            "rules": {
-                "no-process-exit": "off",
-                "handle-callback-err": "off",
-                "no-new-require": "off",
-                "no-path-concat": "off"
-            }
-        },
-        {
-            "files": ["**/actions/**/*.js"],
-            "env": {
-                "node": true,
-                "browser": false
-            },
-            "rules": {
-                "no-console": "off"
-            }
-        }
-    ]
+    {
+      "files": ["**/actions/**/*.js"],
+      "env": {
+        "node": true,
+        "browser": false
+      },
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
 }

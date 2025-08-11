@@ -2,8 +2,8 @@
 * <license header>
 */
 
-import React from 'react'
-import { Heading, View, Content, Link } from '@adobe/react-spectrum'
+import React from 'react';
+import { Heading, View, Content, Link } from '@adobe/react-spectrum';
 export const About = () => (
   <View width="size-6000">
     <Heading level={1}>Useful documentation for your app</Heading>
@@ -40,4 +40,4 @@ export const About = () => (
       </ul>
     </Content>
   </View>
-)
+);

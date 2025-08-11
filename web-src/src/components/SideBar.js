@@ -2,8 +2,8 @@
 * <license header>
 */
 
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 function SideBar () {
   return (
@@ -18,7 +18,7 @@ function SideBar () {
         <NavLink className="SideNav-itemLink" activeClassName="is-selected" aria-current="page" to="/about">About App Builder</NavLink>
       </li>
     </ul>
-  )
+  );
 }
 
-export default SideBar
+export default SideBar;

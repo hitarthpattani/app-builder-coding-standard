@@ -2,8 +2,8 @@
 * <license header>
 */
 
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import {
   Flex,
   Heading,
@@ -16,19 +16,19 @@ import {
   Item,
   Text,
   View
-} from '@adobe/react-spectrum'
-import Function from '@spectrum-icons/workflow/Function'
+} from '@adobe/react-spectrum';
+import Function from '@spectrum-icons/workflow/Function';
 
-import allActions from '../config.json'
-import actionWebInvoke from '../utils'
+import allActions from '../config.json';
+import actionWebInvoke from '../utils';
 
 // remove the deprecated key
 const actions = Object.keys(allActions).reduce((obj, key) => {
   if (key.lastIndexOf('/') > -1) {
-    obj[key] = allActions[key]
+    obj[key] = allActions[key];
   }
-  return obj
-}, {})
+  return obj;
+}, {});
 
 const ActionsForm = (props) => {
   const [state, setState] = useState({
@@ -41,7 +41,7 @@ const ActionsForm = (props) => {
     actionParamsValid: null,
     actionInvokeInProgress: false,
     actionResult: ''
-  })
+  });
 
   return (
     <View width="size-6000">
@@ -124,54 +124,54 @@ const ActionsForm = (props) => {
         validationState={(!state.actionResponseError) ? 'valid' : 'invalid'}
       />
     </View>
-  )
+  );
 
   // Methods
 
   // parses a JSON input and adds it to the state
-  async function setJSONInput (input, stateJSON, stateValid) {
-    let content
-    let validStr = null
+  function setJSONInput (input, stateJSON, stateValid) {
+    let content;
+    let validStr = null;
     if (input) {
       try {
-        content = JSON.parse(input)
-        validStr = 'valid'
+        content = JSON.parse(input);
+        validStr = 'valid';
       } catch (e) {
-        content = null
-        validStr = 'invalid'
+        content = null;
+        validStr = 'invalid';
       }
     }
-    setState({ ...state, [stateJSON]: content, [stateValid]: validStr })
+    setState({ ...state, [stateJSON]: content, [stateValid]: validStr });
   }
 
   // invokes a the selected backend actions with input headers and params
   async function invokeAction () {
-    setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ' })
-    const actionName = state.actionSelected
-    const headers = state.actionHeaders || {}
-    const params = state.actionParams || {}
-    const startTime = Date.now()
+    setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ' });
+    const actionName = state.actionSelected;
+    const headers = state.actionHeaders || {};
+    const params = state.actionParams || {};
+    const startTime = Date.now();
     // all headers to lowercase
     Object.keys(headers).forEach((h) => {
-      const lowercase = h.toLowerCase()
+      const lowercase = h.toLowerCase();
       if (lowercase !== h) {
-        headers[lowercase] = headers[h]
-        headers[h] = undefined
-        delete headers[h]
+        headers[lowercase] = headers[h];
+        headers[h] = undefined;
+        delete headers[h];
       }
-    })
+    });
     // set the authorization header and org from the ims props object
     if (props.ims.token && !headers.authorization) {
-      headers.authorization = `Bearer ${props.ims.token}`
+      headers.authorization = `Bearer ${props.ims.token}`;
     }
     if (props.ims.org && !headers['x-gw-ims-org-id']) {
-      headers['x-gw-ims-org-id'] = props.ims.org
+      headers['x-gw-ims-org-id'] = props.ims.org;
     }
-    let formattedResult = ''
+    let formattedResult = '';
     try {
       // invoke backend action
-      const actionResponse = await actionWebInvoke(actions[actionName], headers, params)
-      formattedResult = `time: ${Date.now() - startTime} ms\n` + JSON.stringify(actionResponse, 0, 2)
+      const actionResponse = await actionWebInvoke(actions[actionName], headers, params);
+      formattedResult = `time: ${Date.now() - startTime} ms\n${JSON.stringify(actionResponse, 0, 2)}`;
       // store the response
       setState({
         ...state,
@@ -179,26 +179,26 @@ const ActionsForm = (props) => {
         actionResult: formattedResult,
         actionResponseError: null,
         actionInvokeInProgress: false
-      })
-      console.log(`Response from ${actionName}:`, actionResponse)
+      });
+      console.log(`Response from ${actionName}:`, actionResponse);
     } catch (e) {
       // log and store any error message
-      formattedResult = `time: ${Date.now() - startTime} ms\n` + e.message
-      console.error(e)
+      formattedResult = `time: ${Date.now() - startTime} ms\n${e.message}`;
+      console.error(e);
       setState({
         ...state,
         actionResponse: null,
         actionResult: formattedResult,
         actionResponseError: e.message,
         actionInvokeInProgress: false
-      })
+      });
     }
   }
-}
+};
 
 ActionsForm.propTypes = {
   runtime: PropTypes.any,
   ims: PropTypes.any
-}
+};
 
-export default ActionsForm
+export default ActionsForm;
