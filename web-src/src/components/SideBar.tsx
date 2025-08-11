@@ -5,24 +5,22 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-const SideBar = () => {
+const SideBar: React.FC = () => {
   return (
     <ul className='SideNav'>
       <li className='SideNav-item'>
         <NavLink
-          className='SideNav-itemLink'
-          activeClassName='is-selected'
+          className={({ isActive }) => `SideNav-itemLink ${isActive ? 'is-selected' : ''}`}
           aria-current='page'
-          exact
           to='/'
+          end
         >
           Home
         </NavLink>
       </li>
       <li className='SideNav-item'>
         <NavLink
-          className='SideNav-itemLink'
-          activeClassName='is-selected'
+          className={({ isActive }) => `SideNav-itemLink ${isActive ? 'is-selected' : ''}`}
           aria-current='page'
           to='/actions'
         >
@@ -31,8 +29,7 @@ const SideBar = () => {
       </li>
       <li className='SideNav-item'>
         <NavLink
-          className='SideNav-itemLink'
-          activeClassName='is-selected'
+          className={({ isActive }) => `SideNav-itemLink ${isActive ? 'is-selected' : ''}`}
           aria-current='page'
           to='/about'
         >

@@ -1,4 +1,5 @@
 # Run code quality checks before each commit
 npm run lint:check
 npm run format:check
+npm run type-check
 npm run test:ci

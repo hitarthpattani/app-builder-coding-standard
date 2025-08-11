@@ -4,7 +4,8 @@
 
 import React from 'react';
 import { Heading, View } from '@adobe/react-spectrum';
-export const Home = () => (
+
+export const Home: React.FC = () => (
   <View width='size-6000'>
     <Heading level={1}>Welcome to HPattaniAppDemov1!</Heading>
   </View>

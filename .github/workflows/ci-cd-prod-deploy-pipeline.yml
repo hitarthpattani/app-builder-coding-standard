@@ -41,6 +41,9 @@ jobs:
       - name: Format Code (Prettier)
         run: npm run format:check
 
+      - name: Type Check (TypeScript)
+        run: npm run type-check
+
       - name: Tests (Unit Tests)
         uses: adobe/aio-apps-action@3.3.0
         with:

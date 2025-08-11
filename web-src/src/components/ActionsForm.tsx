@@ -3,7 +3,6 @@
  */
 
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import {
   Flex,
   Heading,
@@ -22,31 +21,72 @@ import Function from '@spectrum-icons/workflow/Function';
 import allActions from '../config.json';
 import actionWebInvoke from '../utils';
 
-// remove the deprecated key
-const actions = Object.keys(allActions).reduce((obj, key) => {
-  if (key.lastIndexOf('/') > -1) {
-    obj[key] = allActions[key];
-  }
-  return obj;
-}, {});
+// Adobe App Builder Runtime interface
+interface AppBuilderRuntime {
+  on: (event: string, handler: (data: any) => void) => void;
+  // Add other runtime methods as needed
+}
 
-const ActionsForm = props => {
-  const [state, setState] = useState({
+// Adobe IMS interface
+interface AdobeIMS {
+  token?: string;
+  org?: string;
+  // Add other IMS properties as needed
+}
+
+interface ActionsFormProps {
+  runtime: AppBuilderRuntime;
+  ims: AdobeIMS;
+}
+
+interface ActionState {
+  actionSelected: string | null;
+  actionResponse: any;
+  actionResponseError: string | null;
+  actionHeaders: Record<string, any> | null;
+  actionHeadersValid: 'valid' | 'invalid' | undefined;
+  actionParams: Record<string, any> | null;
+  actionParamsValid: 'valid' | 'invalid' | undefined;
+  actionInvokeInProgress: boolean;
+  actionResult: string;
+}
+
+interface ActionItem {
+  name: string;
+}
+
+// remove the deprecated key
+const actions: Record<string, any> = Object.keys(allActions).reduce(
+  (obj, key) => {
+    if (key.lastIndexOf('/') > -1) {
+      obj[key] = (allActions as Record<string, any>)[key];
+    }
+    return obj;
+  },
+  {} as Record<string, any>
+);
+
+const ActionsForm: React.FC<ActionsFormProps> = props => {
+  const [state, setState] = useState<ActionState>({
     actionSelected: null,
     actionResponse: null,
     actionResponseError: null,
     actionHeaders: null,
-    actionHeadersValid: null,
+    actionHeadersValid: undefined,
     actionParams: null,
-    actionParamsValid: null,
+    actionParamsValid: undefined,
     actionInvokeInProgress: false,
     actionResult: '',
   });
 
   // parses a JSON input and adds it to the state
-  const setJSONInput = (input, stateJSON, stateValid) => {
-    let content;
-    let validStr = null;
+  const setJSONInput = (
+    input: string,
+    stateJSON: keyof ActionState,
+    stateValid: keyof ActionState
+  ) => {
+    let content: any;
+    let validStr: 'valid' | 'invalid' | undefined = undefined;
     if (input) {
       try {
         content = JSON.parse(input);
@@ -56,16 +96,28 @@ const ActionsForm = props => {
         validStr = 'invalid';
       }
     }
-    setState({ ...state, [stateJSON]: content, [stateValid]: validStr });
+    setState(prevState => ({
+      ...prevState,
+      [stateJSON]: content,
+      [stateValid]: validStr,
+    }));
   };
 
   // invokes a the selected backend actions with input headers and params
   const invokeAction = async () => {
-    setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ' });
+    setState(prevState => ({
+      ...prevState,
+      actionInvokeInProgress: true,
+      actionResult: 'calling action ... ',
+    }));
+
     const actionName = state.actionSelected;
-    const headers = state.actionHeaders || {};
-    const params = state.actionParams || {};
+    if (!actionName) return;
+
+    const headers: Record<string, any> = state.actionHeaders || {};
+    const params: Record<string, any> = state.actionParams || {};
     const startTime = Date.now();
+
     // all headers to lowercase
     Object.keys(headers).forEach(h => {
       const lowercase = h.toLowerCase();
@@ -75,6 +127,7 @@ const ActionsForm = props => {
         delete headers[h];
       }
     });
+
     // set the authorization header and org from the ims props object
     if (props.ims.token && !headers.authorization) {
       headers.authorization = `Bearer ${props.ims.token}`;
@@ -82,33 +135,37 @@ const ActionsForm = props => {
     if (props.ims.org && !headers['x-gw-ims-org-id']) {
       headers['x-gw-ims-org-id'] = props.ims.org;
     }
+
     let formattedResult = '';
     try {
       // invoke backend action
       const actionResponse = await actionWebInvoke(actions[actionName], headers, params);
-      formattedResult = `time: ${Date.now() - startTime} ms\n${JSON.stringify(actionResponse, 0, 2)}`;
+      formattedResult = `time: ${Date.now() - startTime} ms\n${JSON.stringify(actionResponse, null, 2)}`;
       // store the response
-      setState({
-        ...state,
+      setState(prevState => ({
+        ...prevState,
         actionResponse,
         actionResult: formattedResult,
         actionResponseError: null,
         actionInvokeInProgress: false,
-      });
+      }));
       console.log(`Response from ${actionName}:`, actionResponse);
     } catch (e) {
       // log and store any error message
-      formattedResult = `time: ${Date.now() - startTime} ms\n${e.message}`;
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+      formattedResult = `time: ${Date.now() - startTime} ms\n${errorMessage}`;
       console.error(e);
-      setState({
-        ...state,
+      setState(prevState => ({
+        ...prevState,
         actionResponse: null,
         actionResult: formattedResult,
-        actionResponseError: e.message,
+        actionResponseError: errorMessage,
         actionInvokeInProgress: false,
-      });
+      }));
     }
   };
+
+  const actionItems: ActionItem[] = Object.keys(actions).map(k => ({ name: k }));
 
   return (
     <View width='size-6000'>
@@ -120,40 +177,35 @@ const ActionsForm = props => {
             isRequired={true}
             placeholder='select an action'
             aria-label='select an action'
-            items={Object.keys(actions).map(k => ({ name: k }))}
-            itemKey='name'
-            onSelectionChange={name =>
-              setState({
-                ...state,
-                actionSelected: name,
+            items={actionItems}
+            onSelectionChange={(name: React.Key | null) =>
+              setState(prevState => ({
+                ...prevState,
+                actionSelected: name as string,
                 actionResponseError: null,
                 actionResponse: null,
-              })
+              }))
             }
           >
-            {item => <Item key={item.name}>{item.name}</Item>}
+            {(item: ActionItem) => <Item key={item.name}>{item.name}</Item>}
           </Picker>
 
           <TextArea
             label='headers'
             placeholder='{ "key": "value" }'
             validationState={state.actionHeadersValid}
-            onChange={input => setJSONInput(input, 'actionHeaders', 'actionHeadersValid')}
+            onChange={(input: string) => setJSONInput(input, 'actionHeaders', 'actionHeadersValid')}
           />
 
           <TextArea
             label='params'
             placeholder='{ "key": "value" }'
             validationState={state.actionParamsValid}
-            onChange={input => setJSONInput(input, 'actionParams', 'actionParamsValid')}
+            onChange={(input: string) => setJSONInput(input, 'actionParams', 'actionParamsValid')}
           />
+
           <Flex>
-            <ActionButton
-              variant='primary'
-              type='button'
-              onPress={invokeAction.bind(this)}
-              isDisabled={!state.actionSelected}
-            >
+            <ActionButton type='button' onPress={invokeAction} isDisabled={!state.actionSelected}>
               <Function aria-label='Invoke' />
               <Text>Invoke</Text>
             </ActionButton>
@@ -173,7 +225,7 @@ const ActionsForm = props => {
           padding={'size-100'}
           marginTop={'size-100'}
           marginBottom={'size-100'}
-          borderRadius={'small '}
+          borderRadius={'small'}
         >
           <StatusLight variant='negative'>
             Failure! See the complete error in your browser console.
@@ -185,7 +237,7 @@ const ActionsForm = props => {
           padding={'size-100'}
           marginTop={'size-100'}
           marginBottom={'size-100'}
-          borderRadius={'small '}
+          borderRadius={'small'}
         >
           <StatusLight variant='positive'>
             Success! See the complete response in your browser console.
@@ -205,11 +257,6 @@ const ActionsForm = props => {
       />
     </View>
   );
-};
-
-ActionsForm.propTypes = {
-  runtime: PropTypes.any,
-  ims: PropTypes.any,
 };
 
 export default ActionsForm;

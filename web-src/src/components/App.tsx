@@ -11,34 +11,54 @@ import ActionsForm from './ActionsForm';
 import { Home } from './Home';
 import { About } from './About';
 
-const App = props => {
+// Adobe App Builder Runtime interface
+interface AppBuilderRuntime {
+  on: (event: string, handler: (data: any) => void) => void;
+  // Add other runtime methods as needed
+}
+
+// Adobe IMS interface
+interface AdobeIMS {
+  token?: string;
+  profile?: any;
+  org?: string;
+  // Add other IMS properties as needed
+}
+
+interface AppProps {
+  runtime: AppBuilderRuntime;
+  ims: AdobeIMS;
+}
+
+const App: React.FC<AppProps> = props => {
   console.log('runtime object:', props.runtime);
   console.log('ims object:', props.ims);
 
   // error handler on UI rendering failure
-  const onError = (_e, _componentStack) => {};
+  const onError = (_e: any, _componentStack: any) => {};
 
   // component to show if UI fails rendering
-  const fallbackComponent = ({ componentStack, error }) => {
+  const fallbackComponent = ({ componentStack, error }: any) => {
     return (
       <React.Fragment>
         <h1 style={{ textAlign: 'center', marginTop: '20px' }}>Something went wrong :(</h1>
-        <pre>{`${componentStack}\n${error.message}`}</pre>
+        <pre>{`${componentStack || ''}\n${error?.message || 'Unknown error'}`}</pre>
       </React.Fragment>
     );
   };
 
   // use exc runtime event handlers
   // respond to configuration change events (e.g. user switches org)
-  props.runtime.on('configuration', ({ imsOrg, imsToken, locale }) => {
+  props.runtime.on('configuration', ({ imsOrg, imsToken, locale }: any) => {
     console.log('configuration change', { imsOrg, imsToken, locale });
   });
   // respond to history change events
-  props.runtime.on('history', ({ type, path }) => {
+  props.runtime.on('history', ({ type, path }: any) => {
     console.log('history change', { type, path });
   });
 
   return (
+    // @ts-ignore - ErrorBoundary children type issue in this version
     <ErrorBoundary onError={onError} FallbackComponent={fallbackComponent}>
       <Router>
         <Provider theme={defaultTheme} colorScheme={'light'}>

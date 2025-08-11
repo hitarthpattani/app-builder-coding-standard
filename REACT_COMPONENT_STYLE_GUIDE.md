@@ -9,16 +9,17 @@ This document outlines the coding standards and best practices for React compone
 ## Table of Contents
 
 1. [Component Structure](#component-structure)
-2. [Function Declaration Standards](#function-declaration-standards)
-3. [Import and Export Patterns](#import-and-export-patterns)
-4. [Adobe React Spectrum Guidelines](#adobe-react-spectrum-guidelines)
-5. [State Management](#state-management)
-6. [Event Handling](#event-handling)
-7. [Styling and CSS](#styling-and-css)
-8. [Accessibility](#accessibility)
-9. [Error Handling](#error-handling)
-10. [File Organization](#file-organization)
-11. [Code Examples](#code-examples)
+2. [TypeScript Integration](#typescript-integration)
+3. [Function Declaration Standards](#function-declaration-standards)
+4. [Import and Export Patterns](#import-and-export-patterns)
+5. [Adobe React Spectrum Guidelines](#adobe-react-spectrum-guidelines)
+6. [State Management](#state-management)
+7. [Event Handling](#event-handling)
+8. [Styling and CSS](#styling-and-css)
+9. [Accessibility](#accessibility)
+10. [Error Handling](#error-handling)
+11. [File Organization](#file-organization)
+12. [Code Examples](#code-examples)
 
 ---
 
@@ -68,6 +69,120 @@ ComponentName.propTypes = {
 
 // Default export
 export default ComponentName;
+```
+
+---
+
+## TypeScript Integration
+
+### ✅ File Extensions
+
+Use `.tsx` for React components with TypeScript:
+
+```typescript
+// ✅ GOOD - Component files
+MyComponent.tsx;
+ContactForm.tsx;
+SideBar.tsx;
+
+// ✅ GOOD - Non-component TypeScript files
+utils.ts;
+types.ts;
+constants.ts;
+
+// ❌ BAD - Use .tsx for React components
+MyComponent.ts; // Should be .tsx
+```
+
+### ✅ Component Type Definitions
+
+```typescript
+// ✅ GOOD - Functional component with TypeScript
+import React from 'react';
+
+interface MyComponentProps {
+  title: string;
+  count?: number;
+  onSubmit: (data: string) => void;
+  isLoading?: boolean;
+}
+
+const MyComponent: React.FC<MyComponentProps> = ({
+  title,
+  count = 0,
+  onSubmit,
+  isLoading = false
+}) => {
+  return <div>{title}</div>;
+};
+
+// ✅ GOOD - Props with default values
+interface ButtonProps {
+  variant?: 'primary' | 'secondary';
+  size?: 'small' | 'medium' | 'large';
+  children: React.ReactNode;
+}
+
+const Button: React.FC<ButtonProps> = ({
+  variant = 'primary',
+  size = 'medium',
+  children
+}) => {
+  return <button className={`btn-${variant} btn-${size}`}>{children}</button>;
+};
+```
+
+### ✅ State and Event Types
+
+```typescript
+// ✅ GOOD - Typed state
+const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+const [loading, setLoading] = useState<boolean>(false);
+const [items, setItems] = useState<string[]>([]);
+
+// ✅ GOOD - Event handlers
+const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  // handle submit
+};
+
+const handleChange = (value: string) => {
+  // handle change
+};
+
+const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  // handle click
+};
+```
+
+### ✅ Adobe React Spectrum Types
+
+```typescript
+// ✅ GOOD - Spectrum component props
+import { ActionButton, TextArea } from '@adobe/react-spectrum';
+
+interface FormProps {
+  onSubmit: (data: { message: string }) => Promise<void>;
+  validationState?: 'valid' | 'invalid';
+}
+
+const ContactForm: React.FC<FormProps> = ({ onSubmit, validationState }) => {
+  const [message, setMessage] = useState<string>('');
+
+  return (
+    <Form>
+      <TextArea
+        label="Message"
+        value={message}
+        onChange={setMessage}
+        validationState={validationState}
+      />
+      <ActionButton variant="primary" onPress={() => onSubmit({ message })}>
+        Submit
+      </ActionButton>
+    </Form>
+  );
+};
 ```
 
 ---
@@ -436,10 +551,12 @@ web-src/src/
 
 ### ✅ File Naming
 
-- **Components**: PascalCase (`MyComponent.js`)
-- **Hooks**: camelCase starting with 'use' (`useCustomHook.js`)
-- **Utils**: camelCase (`apiUtils.js`)
-- **Constants**: UPPER_SNAKE_CASE (`API_ENDPOINTS.js`)
+- **React Components**: PascalCase (`MyComponent.tsx`)
+- **TypeScript Utils**: camelCase (`apiUtils.ts`)
+- **Custom Hooks**: camelCase starting with 'use' (`useCustomHook.ts`)
+- **Type Definitions**: camelCase (`types.ts`, `interfaces.ts`)
+- **Constants**: UPPER_SNAKE_CASE (`API_ENDPOINTS.ts`)
+- **Legacy JS Components**: PascalCase (`MyComponent.js`) - migrate to `.tsx`
 
 ---
 
@@ -565,8 +682,17 @@ npm run lint:check
 # Format React components
 npm run format
 
+# Type check TypeScript
+npm run type-check
+
+# Type check with file watching
+npm run type-check:watch
+
 # Auto-fix linting issues
 npm run lint:fix
+
+# Comprehensive validation
+npm run dev:validate
 ```
 
 ---
