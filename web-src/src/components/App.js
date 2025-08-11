@@ -1,6 +1,6 @@
 /*
-* <license header>
-*/
+ * <license header>
+ */
 
 import React from 'react';
 import { Provider, defaultTheme, Grid, View } from '@adobe/react-spectrum';
@@ -11,7 +11,7 @@ import ActionsForm from './ActionsForm';
 import { Home } from './Home';
 import { About } from './About';
 
-function App (props) {
+function App(props) {
   console.log('runtime object:', props.runtime);
   console.log('ims object:', props.ims);
 
@@ -36,18 +36,17 @@ function App (props) {
             height='100vh'
             gap='size-100'
           >
-            <View
-              gridArea='sidebar'
-              backgroundColor='gray-200'
-              padding='size-200'
-            >
+            <View gridArea='sidebar' backgroundColor='gray-200' padding='size-200'>
               <SideBar></SideBar>
             </View>
             <View gridArea='content' padding='size-200'>
               <Routes>
                 <Route path='/' element={<Home />} />
-                <Route path='/actions' element={<ActionsForm runtime={props.runtime} ims={props.ims} />}/>
-                <Route path='/about' element={<About />}/>
+                <Route
+                  path='/actions'
+                  element={<ActionsForm runtime={props.runtime} ims={props.ims} />}
+                />
+                <Route path='/about' element={<About />} />
               </Routes>
             </View>
           </Grid>
@@ -59,15 +58,13 @@ function App (props) {
   // Methods
 
   // error handler on UI rendering failure
-  function onError (_e, _componentStack) { }
+  function onError(_e, _componentStack) {}
 
   // component to show if UI fails rendering
-  function fallbackComponent ({ componentStack, error }) {
+  function fallbackComponent({ componentStack, error }) {
     return (
       <React.Fragment>
-        <h1 style={{ textAlign: 'center', marginTop: '20px' }}>
-          Something went wrong :(
-        </h1>
+        <h1 style={{ textAlign: 'center', marginTop: '20px' }}>Something went wrong :(</h1>
         <pre>{`${componentStack}\n${error.message}`}</pre>
       </React.Fragment>
     );

@@ -82,5 +82,4 @@ yarn.lock
 *.min.js
 *.min.css
 
-# Adobe App Builder specific - ignore web-src directory
-web-src/
+# Adobe App Builder specific - web-src now included for React formatting

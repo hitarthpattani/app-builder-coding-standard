@@ -1,6 +1,6 @@
 /*
-* <license header>
-*/
+ * <license header>
+ */
 
 import React from 'react';
 import { Heading, View } from '@adobe/react-spectrum';

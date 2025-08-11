@@ -1,6 +1,6 @@
 /*
-* <license header>
-*/
+ * <license header>
+ */
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
@@ -15,7 +15,7 @@ import {
   ProgressCircle,
   Item,
   Text,
-  View
+  View,
 } from '@adobe/react-spectrum';
 import Function from '@spectrum-icons/workflow/Function';
 
@@ -30,7 +30,7 @@ const actions = Object.keys(allActions).reduce((obj, key) => {
   return obj;
 }, {});
 
-const ActionsForm = (props) => {
+const ActionsForm = props => {
   const [state, setState] = useState({
     actionSelected: null,
     actionResponse: null,
@@ -40,88 +40,101 @@ const ActionsForm = (props) => {
     actionParams: null,
     actionParamsValid: null,
     actionInvokeInProgress: false,
-    actionResult: ''
+    actionResult: '',
   });
 
   return (
-    <View width="size-6000">
+    <View width='size-6000'>
       <Heading level={1}>Run your application backend actions</Heading>
       {Object.keys(actions).length > 0 && (
-        <Form necessityIndicator="label">
+        <Form necessityIndicator='label'>
           <Picker
-            label="Actions"
+            label='Actions'
             isRequired={true}
-            placeholder="select an action"
-            aria-label="select an action"
-            items={Object.keys(actions).map((k) => ({ name: k }))}
-            itemKey="name"
-            onSelectionChange={(name) =>
+            placeholder='select an action'
+            aria-label='select an action'
+            items={Object.keys(actions).map(k => ({ name: k }))}
+            itemKey='name'
+            onSelectionChange={name =>
               setState({
                 ...state,
                 actionSelected: name,
                 actionResponseError: null,
-                actionResponse: null
+                actionResponse: null,
               })
             }
           >
-            {(item) => <Item key={item.name}>{item.name}</Item>}
+            {item => <Item key={item.name}>{item.name}</Item>}
           </Picker>
 
           <TextArea
-            label="headers"
+            label='headers'
             placeholder='{ "key": "value" }'
             validationState={state.actionHeadersValid}
-            onChange={(input) =>
-              setJSONInput(input, 'actionHeaders', 'actionHeadersValid')
-            }
+            onChange={input => setJSONInput(input, 'actionHeaders', 'actionHeadersValid')}
           />
 
           <TextArea
-            label="params"
+            label='params'
             placeholder='{ "key": "value" }'
             validationState={state.actionParamsValid}
-            onChange={(input) =>
-              setJSONInput(input, 'actionParams', 'actionParamsValid')
-            }
+            onChange={input => setJSONInput(input, 'actionParams', 'actionParamsValid')}
           />
           <Flex>
             <ActionButton
-              variant="primary"
-              type="button"
+              variant='primary'
+              type='button'
               onPress={invokeAction.bind(this)}
               isDisabled={!state.actionSelected}
-            ><Function aria-label="Invoke" /><Text>Invoke</Text></ActionButton>
+            >
+              <Function aria-label='Invoke' />
+              <Text>Invoke</Text>
+            </ActionButton>
 
             <ProgressCircle
-              aria-label="loading"
+              aria-label='loading'
               isIndeterminate
               isHidden={!state.actionInvokeInProgress}
-              marginStart="size-100"
+              marginStart='size-100'
             />
           </Flex>
         </Form>
       )}
 
       {state.actionResponseError && (
-        <View padding={'size-100'} marginTop={'size-100'} marginBottom={'size-100'} borderRadius={'small '}>
-          <StatusLight variant="negative">Failure! See the complete error in your browser console.</StatusLight>
+        <View
+          padding={'size-100'}
+          marginTop={'size-100'}
+          marginBottom={'size-100'}
+          borderRadius={'small '}
+        >
+          <StatusLight variant='negative'>
+            Failure! See the complete error in your browser console.
+          </StatusLight>
         </View>
       )}
       {!state.actionResponseError && state.actionResponse && (
-        <View padding={'size-100'} marginTop={'size-100'} marginBottom={'size-100'} borderRadius={'small '}>
-          <StatusLight variant="positive">Success! See the complete response in your browser console.</StatusLight>
+        <View
+          padding={'size-100'}
+          marginTop={'size-100'}
+          marginBottom={'size-100'}
+          borderRadius={'small '}
+        >
+          <StatusLight variant='positive'>
+            Success! See the complete response in your browser console.
+          </StatusLight>
         </View>
       )}
 
       {Object.keys(actions).length === 0 && <Text>You have no actions !</Text>}
       <TextArea
-        label="results"
+        label='results'
         isReadOnly={true}
-        width="size-6000"
-        height="size-6000"
-        maxWidth="100%"
+        width='size-6000'
+        height='size-6000'
+        maxWidth='100%'
         value={state.actionResult}
-        validationState={(!state.actionResponseError) ? 'valid' : 'invalid'}
+        validationState={!state.actionResponseError ? 'valid' : 'invalid'}
       />
     </View>
   );
@@ -129,7 +142,7 @@ const ActionsForm = (props) => {
   // Methods
 
   // parses a JSON input and adds it to the state
-  function setJSONInput (input, stateJSON, stateValid) {
+  function setJSONInput(input, stateJSON, stateValid) {
     let content;
     let validStr = null;
     if (input) {
@@ -145,14 +158,14 @@ const ActionsForm = (props) => {
   }
 
   // invokes a the selected backend actions with input headers and params
-  async function invokeAction () {
+  async function invokeAction() {
     setState({ ...state, actionInvokeInProgress: true, actionResult: 'calling action ... ' });
     const actionName = state.actionSelected;
     const headers = state.actionHeaders || {};
     const params = state.actionParams || {};
     const startTime = Date.now();
     // all headers to lowercase
-    Object.keys(headers).forEach((h) => {
+    Object.keys(headers).forEach(h => {
       const lowercase = h.toLowerCase();
       if (lowercase !== h) {
         headers[lowercase] = headers[h];
@@ -178,7 +191,7 @@ const ActionsForm = (props) => {
         actionResponse,
         actionResult: formattedResult,
         actionResponseError: null,
-        actionInvokeInProgress: false
+        actionInvokeInProgress: false,
       });
       console.log(`Response from ${actionName}:`, actionResponse);
     } catch (e) {
@@ -190,7 +203,7 @@ const ActionsForm = (props) => {
         actionResponse: null,
         actionResult: formattedResult,
         actionResponseError: e.message,
-        actionInvokeInProgress: false
+        actionInvokeInProgress: false,
       });
     }
   }
@@ -198,7 +211,7 @@ const ActionsForm = (props) => {
 
 ActionsForm.propTypes = {
   runtime: PropTypes.any,
-  ims: PropTypes.any
+  ims: PropTypes.any,
 };
 
 export default ActionsForm;

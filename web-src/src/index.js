@@ -1,6 +1,6 @@
 /*
-* <license header>
-*/
+ * <license header>
+ */
 
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
@@ -24,19 +24,16 @@ try {
   bootstrapRaw();
 }
 
-function bootstrapRaw () {
+function bootstrapRaw() {
   /* **here you can mock the exc runtime and ims objects** */
   const mockRuntime = { on: () => {} };
   const mockIms = {};
 
   // render the actual react application and pass along the runtime object to make it available to the App
-  ReactDOM.render(
-    <App runtime={mockRuntime} ims={mockIms} />,
-    document.getElementById('root')
-  );
+  ReactDOM.render(<App runtime={mockRuntime} ims={mockIms} />, document.getElementById('root'));
 }
 
-function bootstrapInExcShell () {
+function bootstrapInExcShell() {
   // get the Experience Cloud Runtime object
   const runtime = Runtime();
 
@@ -54,20 +51,17 @@ function bootstrapInExcShell () {
     const ims = {
       profile: imsProfile,
       org: imsOrg,
-      token: imsToken
+      token: imsToken,
     };
     // render the actual react application and pass along the runtime and ims objects to make it available to the App
-    ReactDOM.render(
-      <App runtime={runtime} ims={ims} />,
-      document.getElementById('root')
-    );
+    ReactDOM.render(<App runtime={runtime} ims={ims} />, document.getElementById('root'));
   });
 
   // set solution info, shortTitle is used when window is too small to display full title
   runtime.solution = {
     icon: 'AdobeExperienceCloud',
     title: 'HPattaniAppDemov1',
-    shortTitle: 'JGR'
+    shortTitle: 'JGR',
   };
   runtime.title = 'HPattaniAppDemov1';
 }

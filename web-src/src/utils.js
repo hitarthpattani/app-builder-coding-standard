@@ -1,6 +1,6 @@
 /*
-* <license header>
-*/
+ * <license header>
+ */
 
 // fetch is a built-in global in modern browsers
 
@@ -16,14 +16,14 @@
  *
  */
 
-async function actionWebInvoke (actionUrl, headers = {}, params = {}, options = { method: 'POST' }) {
+async function actionWebInvoke(actionUrl, headers = {}, params = {}, options = { method: 'POST' }) {
   const actionHeaders = {
     'Content-Type': 'application/json',
-    ...headers
+    ...headers,
   };
 
   const fetchConfig = {
-    headers: actionHeaders
+    headers: actionHeaders,
   };
 
   if (window.location.hostname === 'localhost') {
@@ -44,7 +44,9 @@ async function actionWebInvoke (actionUrl, headers = {}, params = {}, options = 
   let content = await response.text();
 
   if (!response.ok) {
-    throw new Error(`failed request to '${actionUrl}' with status: ${response.status} and message: ${content}`);
+    throw new Error(
+      `failed request to '${actionUrl}' with status: ${response.status} and message: ${content}`
+    );
   }
   try {
     content = JSON.parse(content);
