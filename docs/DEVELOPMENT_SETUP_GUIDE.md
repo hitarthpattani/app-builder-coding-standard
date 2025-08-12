@@ -9,11 +9,116 @@ This guide provides step-by-step instructions to set up a comprehensive developm
 - Node.js 18+ installed
 - npm or yarn package manager
 - Git repository initialized
-- Adobe App Builder project structure
+- Adobe I/O CLI installed (`npm install -g @adobe/aio-cli`)
+- Adobe Developer Console access
+
+## Initial Project Setup
+
+### 0. Setup Project Directory
+
+Choose one of the following approaches based on your situation:
+
+#### Option A: New Project with GitHub Repository
+
+If you're starting fresh with a new GitHub repository:
+
+```bash
+# 1. Create empty GitHub repository first:
+#    - Go to https://github.com/new
+#    - Repository name: your-app-name
+#    - Description: Adobe App Builder Application
+#    - Keep it Public or Private as needed
+#    - DO NOT initialize with README, .gitignore, or license
+#    - Click "Create repository"
+
+# 2. Clone the empty repository
+git clone https://github.com/your-username/your-app-name.git
+cd your-app-name
+
+# 3. Initialize Adobe App Builder project in the current directory
+aio app init --standalone-app
+
+# Follow the interactive prompts:
+# 1. Choose your Adobe Org
+# 2. Select or create a project
+# 3. Choose a workspace
+# 4. Select template (recommended: @adobe/generator-aio-app)
+# 5. Choose components:
+#    - Actions: Yes (for backend logic)
+#    - Web Assets: Yes (for React SPA)
+#    - CI/CD: Optional (we'll set up our own)
+# 6. When prompted for project name, use current directory (.)
+
+# 4. Verify the project structure
+ls -la
+# You should see: actions/, web-src/, app.config.yaml, package.json, etc.
+
+# 5. Test the initial setup
+npm install
+aio app run --local
+
+# 6. Initial commit to GitHub
+git add .
+git commit -m "Initial Adobe App Builder project setup"
+git push origin main
+```
+
+#### Option B: New Project (Local Only)
+
+If you want to create a project locally first:
+
+```bash
+# 1. Create project directory
+mkdir your-app-name
+cd your-app-name
+
+# 2. Initialize Adobe App Builder project in current directory
+aio app init --standalone-app
+
+# Follow the interactive prompts:
+# 1. Choose your Adobe Org
+# 2. Select or create a project
+# 3. Choose a workspace
+# 4. Select template (recommended: @adobe/generator-aio-app)
+# 5. Choose components:
+#    - Actions: Yes (for backend logic)
+#    - Web Assets: Yes (for React SPA)
+#    - CI/CD: Optional (we'll set up our own)
+# 6. When prompted for project name, use current directory (.)
+
+# 3. Verify the project structure
+ls -la
+# You should see: actions/, web-src/, app.config.yaml, package.json, etc.
+
+# 4. Test the initial setup
+npm install
+aio app run --local
+
+# 5. Initialize Git repository (optional)
+git init
+git add .
+git commit -m "Initial Adobe App Builder project setup"
+```
+
+#### Option C: Clone Existing Project
+
+If working with an existing Adobe App Builder project:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-username/your-app-name.git
+cd your-app-name
+
+# 2. Install dependencies
+npm install
+
+# 3. Test the existing setup
+aio app run --local
+```
 
 ## Pre-Setup: Verify Existing Dependencies
 
-Before starting, check what's already installed in your Adobe App Builder project:
+After creating or cloning your Adobe App Builder project, check what's already installed:
 
 ```bash
 # Check if core packages are already installed
@@ -1296,7 +1401,15 @@ mv docs/README.md . 2>/dev/null || true
 
 ### Complete Setup in One Go
 
+#### For New GitHub Projects:
+
 ```bash
+# 0. Setup project with GitHub repository
+git clone https://github.com/your-username/your-app-name.git
+cd your-app-name
+aio app init --standalone-app
+# (Follow interactive prompts, use current directory when asked for project name)
+
 # 1. Install dependencies (skip packages already installed in your Adobe App Builder project)
 npm install --save-dev husky prettier typescript @types/react @types/react-dom @types/node @types/react-router-dom
 
@@ -1316,6 +1429,28 @@ npx husky add .husky/pre-push "npm run lint:check && npm run type-check && npm r
 npm run dev:setup
 npm run format
 npm run lint:fix
+
+# 7. Commit to GitHub
+git add .
+git commit -m "Add comprehensive development tooling and CI/CD setup"
+git push origin main
+```
+
+#### For Local Projects:
+
+```bash
+# 0. Create project directory and initialize Adobe App Builder
+mkdir your-app-name
+cd your-app-name
+aio app init --standalone-app
+# (Follow interactive prompts, use current directory when asked for project name)
+
+# 1-6. Follow same steps as above
+
+# 7. Initialize Git (optional)
+git init
+git add .
+git commit -m "Initial setup with comprehensive development tooling"
 ```
 
 ### Validation Commands
